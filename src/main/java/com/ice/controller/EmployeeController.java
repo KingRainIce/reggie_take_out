@@ -1,19 +1,20 @@
 package com.ice.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.ice.common.R;
 import com.ice.entity.Employee;
 import com.ice.service.impl.EmployeeServiceImpl;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.DigestUtils;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.util.StreamUtils;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.time.LocalDateTime;
 
 /**
  * @Title: EmployeeController
@@ -40,7 +41,7 @@ public class EmployeeController {
 
         // Check the database based on the username submitted by the page
         LambdaQueryWrapper<Employee> wrapper = new LambdaQueryWrapper<>();
-        wrapper.eq(Employee::getUsername,employee.getUsername());
+        wrapper.eq(Employee::getUsername, employee.getUsername());
         Employee emp = employeeService.getOne(wrapper);
 
         // No such user
@@ -65,10 +66,47 @@ public class EmployeeController {
 
 
     @PostMapping("/logout")
-    public R<String> logout(HttpServletRequest request){
+    public R<String> logout(HttpServletRequest request) {
         // Clean up the IDs of current employee logins saved in the Session
         request.getSession().removeAttribute("employee");
         return R.success("退出成功");
+    }
+
+
+    @PostMapping
+    public R<String> save(HttpServletRequest request, @RequestBody Employee employee) {
+        log.info("新增员工，员工信息：{}", employee.toString());
+        // To set the initial password, MD 5 encryption is required
+        employee.setPassword(DigestUtils.md5DigestAsHex("123456".getBytes()));
+
+        employee.setCreateTime(LocalDateTime.now());
+        employee.setUpdateTime(LocalDateTime.now());
+
+        Long empId = (Long) request.getSession().getAttribute("employee");
+
+        employee.setCreateUser(empId);
+        employee.setUpdateUser(empId);
+
+        employeeService.save(employee);
+
+        return R.success("新增员工成功");
+    }
+
+    @GetMapping("/page")
+    public R<Page> page(int page, int pageSize, String name) {
+        // Construct a paging constructor
+        Page pageInfo = new Page(page, pageSize);
+        // Construct the conditional constructor
+        LambdaQueryWrapper<Employee> queryWrapper = new LambdaQueryWrapper();
+        // Add filters
+        queryWrapper.like(StringUtils.isNotEmpty(name), Employee::getName, name);
+        // Add sort criteria
+        queryWrapper.orderByDesc(Employee::getUpdateTime);
+
+        // Execute the query
+        employeeService.page(pageInfo, queryWrapper);
+
+        return R.success(pageInfo);
     }
 
 }
