@@ -1,6 +1,7 @@
 package com.ice.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.ice.dto.DishDto;
 import com.ice.entity.Dish;
 
 /**
@@ -12,4 +13,7 @@ import com.ice.entity.Dish;
  */
 
 public interface DishService extends IService<Dish> {
+
+    public void saveWithFlavor(DishDto dishDto);
+
 }

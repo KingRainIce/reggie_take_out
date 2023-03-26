@@ -4,17 +4,14 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.ice.common.R;
 import com.ice.entity.Employee;
-import com.ice.service.impl.EmployeeServiceImpl;
+import com.ice.service.EmployeeService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.DigestUtils;
-import org.springframework.util.StreamUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import java.time.LocalDateTime;
 
 /**
  * @Title: EmployeeController
@@ -30,7 +27,7 @@ import java.time.LocalDateTime;
 public class EmployeeController {
 
     @Resource
-    private EmployeeServiceImpl employeeService;
+    private EmployeeService employeeService;
 
     @PostMapping("/login")
     public R<Employee> login(HttpServletRequest request,

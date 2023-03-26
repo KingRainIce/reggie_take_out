@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 /**
  * @Title: CategoryController
@@ -47,5 +48,19 @@ public class CategoryController {
         return R.success("删除分类成功!");
     }
 
+    @PutMapping
+    public R<String> update(@RequestBody Category category) {
+        categoryService.updateById(category);
+        return R.success("修改分类成功!");
+    }
+
+    @GetMapping("/list")
+    public R<List<Category>> list(Category category) {
+        LambdaQueryWrapper<Category> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(category.getType() != null, Category::getType, category.getType());
+        wrapper.orderByDesc(Category::getSort);
+        List<Category> list = categoryService.list(wrapper);
+        return R.success(list);
+    }
 
 }
