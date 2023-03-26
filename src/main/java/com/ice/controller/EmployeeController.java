@@ -79,13 +79,7 @@ public class EmployeeController {
         // To set the initial password, MD 5 encryption is required
         employee.setPassword(DigestUtils.md5DigestAsHex("123456".getBytes()));
 
-        employee.setCreateTime(LocalDateTime.now());
-        employee.setUpdateTime(LocalDateTime.now());
-
         Long empId = (Long) request.getSession().getAttribute("employee");
-
-        employee.setCreateUser(empId);
-        employee.setUpdateUser(empId);
 
         employeeService.save(employee);
 
@@ -114,11 +108,18 @@ public class EmployeeController {
         log.info(employee.toString());
 
         Long empId = (Long) request.getSession().getAttribute("employee");
-        employee.setUpdateTime(LocalDateTime.now());
-        employee.setUpdateUser(empId);
         employeeService.updateById(employee);
 
         return R.success("员工信息修改成功");
+    }
+
+    @GetMapping("/{id}")
+    public R<Employee> getById(@PathVariable String id){
+        Employee emp = employeeService.getById(id);
+        if (emp != null){
+            return R.success(emp);
+        }
+        return R.error("没有查询到该用户信息");
     }
 
 
