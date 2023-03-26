@@ -11,4 +11,7 @@ import com.ice.entity.Category;
  * @Desc:
  */
 public interface CategoryService extends IService<Category>{
+
+    public void remove(Long id);
+
 }
