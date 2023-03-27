@@ -4,7 +4,6 @@ import com.alibaba.fastjson.JSON;
 import com.ice.common.R;
 import com.ice.utils.BaseContext;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 import org.springframework.util.AntPathMatcher;
 
@@ -44,7 +43,10 @@ public class LoginCheckFilter implements Filter {
                 "/employee/login",
                 "/employee/logout",
                 "/backend/**",
-                "/front/**"
+                "/front/**",
+                "/common/**",
+                "/user/sendMsg",
+                "/user/login"
         };
 
 //        2. Determine whether this request needs to be processed
@@ -67,6 +69,19 @@ public class LoginCheckFilter implements Filter {
             chain.doFilter(request, response);
             return;
         }
+
+        // 4.2、Determine the login status, and if you have logged in, you will be allowed to go directly
+        if (request.getSession().getAttribute("user") != null) {
+            log.info("用户已登录，用户id为：{}", request.getSession().getAttribute("user"));
+
+            Long userId = (Long) request.getSession().getAttribute("user");
+
+            BaseContext.setCurrentId(userId);
+
+            chain.doFilter(request, response);
+            return;
+        }
+
         log.info("用户未登录");
 
 //        5. If you are not logged in, the result of not logging in is returned, and the response data is streamed to the client page through the output
