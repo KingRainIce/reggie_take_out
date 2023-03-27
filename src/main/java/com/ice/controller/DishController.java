@@ -85,5 +85,41 @@ public class DishController {
         return R.success(dishDtoPage);
     }
 
+    @GetMapping("/{id}")
+    public R<DishDto> getById(@PathVariable Long id) {
+        DishDto dishDto = dishService.getByIdWithFlavor(id);
+        return R.success(dishDto);
+    }
+
+    @PutMapping
+    public R<String> update(@RequestBody DishDto dishDto) {
+        dishService.updateWithFlavor(dishDto);
+        return R.success("修改菜品成功!");
+    }
+
+    @PostMapping("/status/{status}")
+    public R<String> sale(@PathVariable Integer status, String[] ids) {
+        return dishService.updateStatus(status, ids);
+    }
+
+    @DeleteMapping
+    public R<String> delete(String[] ids) {
+        for (String id : ids) {
+            dishService.removeById(id);
+        }
+        return R.success("删除菜品成功!");
+    }
+
+    @GetMapping("/list")
+    public R<List> list(Dish dish) {
+        LambdaQueryWrapper<Dish> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(Dish::getStatus, 1)
+                .eq(dish.getCategoryId() != null, Dish::getCategoryId, dish.getCategoryId())
+                .orderByAsc(Dish::getSort)
+                .orderByDesc(Dish::getUpdateTime);
+
+        List<Dish> list = dishService.list(wrapper);
+        return R.success(list);
+    }
 
 }

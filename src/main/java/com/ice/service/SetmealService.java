@@ -1,9 +1,8 @@
 package com.ice.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.ice.dto.SetmealDto;
 import com.ice.entity.Setmeal;
-import com.ice.mapper.SetmealMapper;
 
 /**
  * @Title: SetmealService
@@ -14,4 +13,10 @@ import com.ice.mapper.SetmealMapper;
  */
 
 public interface SetmealService extends IService<Setmeal> {
+
+    void saveWithDish(SetmealDto setmealDto);
+
+    SetmealDto getByIdWithDish(Long id);
+
+    void updateWithDish(SetmealDto setmealDto);
 }
