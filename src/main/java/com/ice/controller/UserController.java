@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.util.Map;
 
@@ -78,6 +79,14 @@ public class UserController {
             return R.success(user);
         }
         return R.error("登陆失败");
+    }
+
+    //用户登出
+    @PostMapping("/loginout")
+    public R<String> loginout(HttpServletRequest request) {
+        //清理Session中保存的当前用户登录的id
+        request.getSession().removeAttribute("user");
+        return R.success("退出成功");
     }
 
 

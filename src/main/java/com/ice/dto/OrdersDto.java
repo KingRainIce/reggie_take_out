@@ -19,4 +19,6 @@ public class OrdersDto extends Orders {
 
     private List<OrderDetail> orderDetails;
 
+    private int sumNum;
+
 }
